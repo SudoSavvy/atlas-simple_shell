@@ -8,6 +8,7 @@
 
 #define PROMPT "$ "
 
-
+void execute_command(char **argv);
+void handle_exit(char **argv, char *line);
 
 #endif /* SHELL_H */
