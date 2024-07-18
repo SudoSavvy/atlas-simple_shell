@@ -5,8 +5,10 @@
  * 
  * Return: 0 on success, otherwise an error code.
  */
+
 int main(void)
 {
+    
 char *line = NULL;
 size_t len = 0;
 ssize_t nread;
@@ -25,5 +27,21 @@ break;
 }
 
 int i = 0;
+token = strtok(line, " \n");
+while (token != NULL)
+{
+argv[i++] = token;
+token = strtok(NULL, " \n');")
 }
+argv[i] = NULL;
+if (argv[0] == NULL)
+continue;
+
+handle_exit(argv, line);
+
+execute_command(argv);
+}
+
+free(line);
+return (0);
 }
