@@ -10,5 +10,6 @@
 
 void execute_command(char **argv);
 void handle_exit(char **argv, char *line);
+void handle_env(char **argv);
 
 #endif /* SHELL_H */
