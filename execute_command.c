@@ -8,23 +8,24 @@ void execute_command(char **argv)
 {
     pid_t pid;
 
-    pid = fork();
-    if (pid == -1)
+    pid = fork(); /* Create a new process */
+    if (pid == -1) /* Check if fork failed */
     {
         perror("fork");
         exit(EXIT_FAILURE);
     }
-    if (pid == 0)
+    if (pid == 0) /* Child process */
     {
-        if (execve(argv[0], argv, environ) == -1)
+        if (execve(argv[0], argv, environ) == -1) /* Try to execute the command */
         {
             perror("execve");
-            exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE); /* Exit if execve fails */
         }
     }
-    else
+    else /* Parent process */
     {
         int status;
-        waitpid(pid, &status, 0);
+
+        waitpid(pid, &status, 0); /* Wait for the child process to finish */
     }
 }
