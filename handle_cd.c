@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <unistd.h>
 
 /**
  * handle_cd - Handles the cd built-in command
@@ -10,11 +11,14 @@ void handle_cd(char **argv)
     {
         if (argv[1] == NULL)
         {
-            fprintf(stderr, "cd: expected argument to \"cd\"\n");
+            fprintf(stderr, "cd: expected argument\n");
         }
-        else if (chdir(argv[1]) != 0)
+        else
         {
-            perror("cd");
+            if (chdir(argv[1]) != 0)
+            {
+                perror("cd");
+            }
         }
     }
 }
