@@ -74,8 +74,8 @@ command_entry commands[] = {
     {"env", print_env},
     {"hello", say_hello},
     {"date", print_date},
-    {"help", print_help},  // Added help command
-    // Add more commands here
+    {"help", print_help},  /*dded help command*/
+    /*Add more commands here*/
 };
 
 #define NUM_COMMANDS (sizeof(commands) / sizeof(command_entry))
@@ -88,10 +88,10 @@ int process_command(const char *cmd)
         if (strcmp(cmd, commands[i].command) == 0)
         {
             commands[i].handler();
-            return 1;  // Command processed
+            return 1;  /*Command processed*/
         }
     }
-    return 0;  // Command not processed
+    return 0;  /*Command not processed*/
 }
 
 /* Main loop of the shell */
@@ -112,7 +112,7 @@ int main(void)
             if (feof(stdin))
             {
                 printf("\n");
-                break;  // Exit on EOF
+                break;  /*Exit on EOF*/
             }
             else
             {
@@ -121,11 +121,11 @@ int main(void)
             }
         }
 
-        line[strcspn(line, "\n")] = 0;  // Remove trailing newline
+        line[strcspn(line, "\n")] = 0;  /*Remove trailing newline*/
 
         if (strlen(line) == 0)
         {
-            continue;  // Skip empty input
+            continue;  /*Skip empty input*/
         }
 
         if (!process_command(line))
