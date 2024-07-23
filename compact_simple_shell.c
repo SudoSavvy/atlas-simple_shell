@@ -111,7 +111,7 @@ int main(void)
         nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
-            if (fgets(stdin))
+            if (fgets(buffer, BUFFER_SIZE , stdin) != NULL)
             {
                 printf("\n");
                 break;  /*Exit on EOF*/
