@@ -83,8 +83,8 @@ command_entry commands[] = {
 /* Process commands */
 int process_command(const char *cmd)
 {
-    int size_t;
-    for (size_t = 0; size_t < NUM_COMMANDS; size_t++)
+    size_t i;
+    for (i = 0; i < NUM_COMMANDS; i++)
     {
        if (strcmp(cmd, commands[i].command) == 0)
         {
