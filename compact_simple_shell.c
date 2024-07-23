@@ -122,7 +122,7 @@ int main(void)
             }
         }
 
-        line[strchr(line, "\n")] = 0;  /*Remove trailing newline*/
+        line[strcspn(line, "\n")] = 0;  /*Remove trailing newline*/
 
         if (strlen(line) == 0)
         {
