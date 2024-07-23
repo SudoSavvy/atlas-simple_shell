@@ -110,7 +110,7 @@ int main(void)
         nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
-            if (getchar(stdin))
+            if (fgets(stdin))
             {
                 printf("\n");
                 break;  /*Exit on EOF*/
