@@ -98,6 +98,7 @@ int process_command(const char *cmd)
 /* Main loop of the shell */
 int main(void)
 {
+    char *newline;
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
@@ -122,7 +123,6 @@ int main(void)
             }
         }
 
-        char *newline;
         *newline = strchr(line, '\n');
         if (newline)
         {
