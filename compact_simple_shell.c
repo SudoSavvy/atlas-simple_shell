@@ -122,8 +122,12 @@ int main(void)
             }
         }
 
-        line[strchr(line, "\n")] = 0;  /*Remove trailing newline*/
-
+        char *newline = strchr(line, '\n');
+        if (newline)
+        {
+            *newline = '\0';
+        }
+        
         if (strlen(line) == 0)
         {
             continue;  /*Skip empty input*/
