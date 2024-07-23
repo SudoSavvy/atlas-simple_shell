@@ -110,7 +110,7 @@ int main(void)
         nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
-            if (feof(stdin))
+            if (getc(stdin))
             {
                 printf("\n");
                 break;  /*Exit on EOF*/
@@ -122,7 +122,7 @@ int main(void)
             }
         }
 
-        line[strcspn(line, "\n")] = 0;  /*Remove trailing newline*/
+        line[strchr(line, "\n")] = 0;  /*Remove trailing newline*/
 
         if (strlen(line) == 0)
         {
