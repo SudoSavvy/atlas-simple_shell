@@ -123,7 +123,7 @@ int main(void)
             }
         }
 
-        *newline = strchr(line, '\n');
+        newline = strchr(line, '\n');
         if (newline)
         {
             *newline = '\0';
