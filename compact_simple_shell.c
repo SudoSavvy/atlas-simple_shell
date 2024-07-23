@@ -86,12 +86,13 @@ int process_command(const char *cmd)
     int i;
     for (i = 0; i < NUM_COMMANDS; i++)
     {
-        if (strcmp(cmd, commands[i].command) == 0)
+       /* if (strcmp(cmd, commands[i].command) == 0)
         {
             commands[i].handler();
             return 1;  /*Command processed*/
         }
     }
+    */
     return 0;  /*Command not processed*/
 }
 
