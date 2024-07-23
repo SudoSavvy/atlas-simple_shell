@@ -102,6 +102,7 @@ int main(void)
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
+    char buffer[BUFFER_SIZE];
 
     while (1)
     {
@@ -111,7 +112,7 @@ int main(void)
         nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
-            if (fgets(BUFFER_SIZE , stdin) != NULL)
+            if (fgets(buffer, BUFFER_SIZE , stdin) != NULL)
             {
                 printf("\n");
                 break;  /*Exit on EOF*/
