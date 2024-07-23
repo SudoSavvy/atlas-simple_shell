@@ -122,7 +122,8 @@ int main(void)
             }
         }
 
-        char *newline = strchr(line, '\n');
+        char *newline;
+        *newline = strchr(line, '\n');
         if (newline)
         {
             *newline = '\0';
