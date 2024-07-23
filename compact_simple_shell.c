@@ -110,7 +110,7 @@ int main(void)
         nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
-            if (getc(stdin))
+            if (getchar())
             {
                 printf("\n");
                 break;  /*Exit on EOF*/
@@ -127,7 +127,7 @@ int main(void)
         {
             *newline = '\0';
         }
-        
+
         if (strlen(line) == 0)
         {
             continue;  /*Skip empty input*/
