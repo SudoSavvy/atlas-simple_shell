@@ -1,9 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <windows.h>   /* Include Windows API for process and file operations */
+#include <stdio.h>     /* Include standard I/O functions */
+#include <stdlib.h>    /* Include standard library functions */
+#include <string.h>    /* Include string handling functions */
+#include <time.h>      /* Include time functions */
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 1024   /* Define a buffer size constant for command input */
 
 /* Function prototypes */
 void print_env(void);
@@ -12,135 +13,223 @@ void say_hello(void);
 void print_date(void);
 void print_help(void);
 int process_command(const char *cmd);
+void execute_command(const char *cmd);
+int file_exists(const char *path);
 
-/* Command handler functions */
+/**
+ * print_env - Print all environment variables to the console.
+ */
 void print_env(void)
 {
-    char *env = getenv("PATH");
-    if (env)
+    char **env = environ;
+
+    while (*env)
     {
-        printf("PATH=%s\n", env);
-    }
-    else
-    {
-        printf("PATH environment variable not set.\n");
+        printf("%s\n", *env); /* Print each environment variable */
+        env++;
     }
 }
 
+/**
+ * handle_exit - Handle the 'exit' command by printing a message and exiting.
+ */
 void handle_exit(void)
 {
-    printf("Exiting...\n");
-    exit(0);
+    printf("Exiting...\n"); /* Print exiting message */
+    exit(0); /* Exit the program with status 0 */
 }
 
+/**
+ * say_hello - Print a greeting message to the console.
+ */
 void say_hello(void)
 {
-    printf("Hello, world!\n");
+    printf("Hello, world!\n"); /* Print greeting message */
 }
 
+/**
+ * print_date - Print the current date and time to the console.
+ */
 void print_date(void)
 {
     time_t now = time(NULL);
+
     if (now != -1)
     {
-        printf("Current date and time: %s", ctime(&now));
+        printf("Current date and time: %s", ctime(&now)); /* Print current date and time */
     }
     else
     {
-        perror("time");
+        perror("time"); /* Print error message if time retrieval failed */
     }
 }
 
+/**
+ * print_help - Print the help message listing all available commands.
+ */
 void print_help(void)
 {
     printf("Available commands:\n");
     printf("  exit    - Exit the shell\n");
-    printf("  env     - Print the PATH environment variable\n");
+    printf("  env     - Print the environment variables\n");
     printf("  hello   - Print a greeting message\n");
     printf("  date    - Print the current date and time\n");
     printf("  help    - Show this help message\n");
 }
 
-/* Command table */
+/* Define a function pointer type for command handlers */
 typedef void (*command_handler)(void);
 
+/**
+ * struct command_entry - Structure to hold a command and its handler.
+ * @command: The command string.
+ * @handler: The function pointer to the command handler.
+ */
 typedef struct {
     const char *command;
     command_handler handler;
 } command_entry;
 
+/* Array of command entries */
 command_entry commands[] = {
     {"exit", handle_exit},
     {"env", print_env},
     {"hello", say_hello},
     {"date", print_date},
-    {"help", print_help},  /*dded help command*/
-    /*Add more commands here*/
+    {"help", print_help},
+    /* Add more commands here */
 };
 
-#define NUM_COMMANDS (sizeof(commands) / sizeof(command_entry))
+#define NUM_COMMANDS (sizeof(commands) / sizeof(command_entry)) /* Calculate the number of commands */
 
-/* Process commands */
+/**
+ * process_command - Process built-in commands.
+ * @cmd: The command string input by the user.
+ *
+ * Return: 1 if the command was processed, 0 otherwise.
+ */
 int process_command(const char *cmd)
 {
     size_t i;
+
     for (i = 0; i < NUM_COMMANDS; i++)
     {
-       if (strcmp(cmd, commands[i].command) == 0)
+        if (strcmp(cmd, commands[i].command) == 0)
         {
-            commands[i].handler();
-            return 1;  /*Command processed*/
+            commands[i].handler(); /* Call the corresponding command handler */
+            return (1); /* Command processed */
         }
     }
-    return 0;  /*Command not processed*/
+    return (0); /* Command not processed */
 }
 
-/* Main loop of the shell */
+/**
+ * file_exists - Check if a file exists.
+ * @path: The path to the file.
+ *
+ * Return: 1 if the file exists, 0 otherwise.
+ */
+int file_exists(const char *path)
+{
+    DWORD fileAttr = GetFileAttributes(path);
+
+    return (fileAttr != INVALID_FILE_ATTRIBUTES &&
+            !(fileAttr & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+/**
+ * execute_command - Execute external commands.
+ * @cmd: The command string input by the user.
+ */
+void execute_command(const char *cmd)
+{
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    char command[BUFFER_SIZE];
+
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    snprintf(command, BUFFER_SIZE, "%s", cmd);
+
+    if (!file_exists(command))
+    {
+        fprintf(stderr, "Command not found or is not executable: %s\n", cmd);
+        return;
+    }
+
+    if (!CreateProcess(
+            NULL,        /* No module name (use command line) */
+            command,     /* Command line */
+            NULL,        /* Process handle not inheritable */
+            NULL,        /* Thread handle not inheritable */
+            FALSE,       /* Set handle inheritance to FALSE */
+            0,           /* No creation flags */
+            NULL,        /* Use parent's environment block */
+            NULL,        /* Use parent's starting directory */
+            &si,         /* Pointer to STARTUPINFO structure */
+            &pi))        /* Pointer to PROCESS_INFORMATION structure */
+    {
+        fprintf(stderr, "CreateProcess failed (%d).\n", GetLastError());
+        return;
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE); /* Wait for the process to finish */
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+}
+
+/**
+ * main - Main loop of the shell.
+ *
+ * Return: 0 on success, 1 on error.
+ */
 int main(void)
 {
     char *newline;
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
-    char buffer[BUFFER_SIZE];
 
     while (1)
     {
-        printf("simple_shell> ");
-        fflush(stdout);
+        printf("simple_shell> "); /* Print shell prompt */
+        fflush(stdout); /* Flush output buffer */
 
-        nread = getline(&line, &len, stdin);
+        nread = getline(&line, &len, stdin); /* Read input line */
         if (nread == -1)
         {
-            if (fgets(buffer, BUFFER_SIZE , stdin) != NULL)
+            if (feof(stdin)) /* End of file */
             {
                 printf("\n");
-                break;  /*Exit on EOF*/
+                break; /* Exit on EOF */
             }
             else
             {
-                perror("getline");
+                perror("getline"); /* Print error message */
                 continue;
             }
         }
 
-        newline = strchr(line, '\n');
+        newline = strchr(line, '\n'); /* Find newline character */
         if (newline)
         {
-            *newline = '\0';
+            *newline = '\0'; /* Replace newline character with null terminator */
         }
 
         if (strlen(line) == 0)
         {
-            continue;  /*Skip empty input*/
+            continue; /* Skip empty input */
         }
 
-        if (!process_command(line))
+        if (!process_command(line)) /* Process built-in commands */
         {
-            fprintf(stderr, "%s: command not found\n", line);
+            execute_command(line); /* Execute external command */
         }
     }
 
-    free(line);
-    return 0;
+    free(line); /* Free the allocated buffer */
+    return (0);
 }
