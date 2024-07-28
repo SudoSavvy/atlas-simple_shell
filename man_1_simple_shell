@@ -1,1 +1,27 @@
-man page place holder
+.TH man_1_simple_shell
+
+.SH Name
+man_1_simple_shell 
+
+.SH Format Specifiers
+.B #include <windows.h>
+.B #include <stdio.h>
+.B #include <stdlib.h>
+.B #include <string.h>
+.B #include <time.h>
+
+.SH Synopsis
+A simple shell provides a command-line interface for users to interact with the operating system by executing commands and managing basic operations like input/output redirection.
+
+
+.SH Description
+.B Simple Shell
+
+A simple shell is a text-based interface where users can type commands to interact with the operating system. It reads user input, executes commands, and can handle basic operations like input/output redirection and piping.
+
+
+.SH Suthors
+.B Natalie Ritchie & Donovan Heape
+
+.SH Copyright
+.B N/A
