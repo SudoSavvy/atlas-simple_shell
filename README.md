@@ -1,6 +1,7 @@
 This README file is for the "Simple Shell" project.
 
-Flow Chart
+## Flow Chart
+'''
 
  ---------------            -----------------
 |     Start     |--------->|  Input Command? |
@@ -44,6 +45,7 @@ Flow Chart
                              |     End      |
                               --------------
 
+'''
 
 Description
 A simple shell, also known as a command-line interpreter or CLI (Command Line Interface), is a program that provides a text-based interface for users to interact with the operating system by entering commands. It reads commands from the user, interprets them, and then executes the corresponding programs or actions.
