@@ -165,11 +165,6 @@ void execute_command(const char *cmd)
         perror("execlp"); /* If execlp fails */
         exit(EXIT_FAILURE); /* Exit the child process with failure status */
     }
-    else /* Parent process */
-    {
-        int status;
-        waitpid(pid, &status, 0); /* Wait for the child process to terminate */
-    }
 }
 
 /**
