@@ -151,23 +151,32 @@ int file_exists(const char *path)
  */
 void execute_command(const char *cmd)
 {
-    pid_t pid;
+    char *args[100]; /* Array to hold command and arguments */
+    char command[BUFFER_SIZE];
+    char *token;
+    int i = 0;
 
-    pid = fork();  /* Create a new process */
-    if (pid == -1) /* Check if fork failed */
+    snprintf(command, BUFFER_SIZE, "%s", cmd);
+
+    /* Tokenize the command string */
+    token = strtok(command, " ");
+    while (token != NULL)
     {
-        perror("fork");
+        args[i++] = token; /* Store each token */
+        token = strtok(NULL, " ");
+    }
+    args[i] = NULL; /* Null-terminate the argument list */
+
+    if (!file_exists(args[0]))
+    {
+        fprintf(stderr, "Command not found or is not executable: %s\n", args[0]);
         return;
     }
-    else if (pid == 0) /* Child process */
-    {
-        /* Execute the command */
-        execlp(cmd, cmd, (char *)NULL);
-        
-        /* If execlp fails, print an error message */
-        perror("execlp");
-        exit(EXIT_FAILURE); /* Exit the child process with failure status */
-    }
+
+    execvp(args[0], args); /* Execute the command with arguments */
+
+    /* If execvp returns, an error occurred */
+    perror("execvp");
 }
 
 /**
@@ -188,10 +197,19 @@ int main(void)
         fflush(stdout); /* Flush output buffer */
 
         nread = getline(&line, &len, stdin); /* Read input line */
+        
         if (nread == -1)
         {
-            perror("getline"); /* Print error message if getline failed */
-            break; /* Exit the loop if there is an error or EOF */
+            if (feof(stdin)) /* End of file */
+            {
+                printf("\n");
+                break; /* Exit on EOF */
+            }
+            else
+            {
+                perror("getline"); /* Print error message */
+                continue;
+            }
         }
 
         newline = strchr(line, '\n'); /* Find newline character */
