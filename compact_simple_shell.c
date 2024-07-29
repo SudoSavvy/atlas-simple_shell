@@ -165,6 +165,12 @@ void execute_command(const char *cmd)
         perror("execlp"); /* If execlp fails */
         exit(EXIT_FAILURE); /* Exit the child process with failure status */
     }
+    else
+    {
+        /* Parent process */
+        int status;
+        waitpid(pid, &status, 0); /* Wait for the child process to complete */
+    }
 }
 
 /**
@@ -185,10 +191,8 @@ int main(void)
         fflush(stdout); /* Flush output buffer */
 
         nread = getline(&line, &len, stdin); /* Read input line */
-        
         if (nread == -1)
         {
-             /* If getline returns -1, it indicates an error or EOF */
             perror("getline"); /* Print error message if getline failed */
             break; /* Exit the loop if there is an error or EOF */
         }
