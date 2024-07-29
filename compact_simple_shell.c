@@ -152,23 +152,18 @@ int file_exists(const char *path)
 void execute_command(const char *cmd)
 {
     pid_t pid;
-    int status;
 
-    pid = fork();
-    if (pid == -1)
+    pid = fork();  /* Create a new process */
+    if (pid == -1) /* Check if fork failed */
     {
         perror("fork");
         return;
     }
-    else if (pid == 0)
+    else if (pid == 0) /* Child process */
     {
-        execlp(cmd, cmd, (char *)NULL);
-        perror("execlp");
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        waitpid(pid, &status, 0);
+        execlp(cmd, cmd, (char *)NULL);  /* Replace the child process with the command */
+        perror("execlp"); /* If execlp fails */
+        exit(EXIT_FAILURE); /* Exit the child process with failure status */
     }
 }
 
