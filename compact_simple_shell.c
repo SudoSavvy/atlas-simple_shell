@@ -1,4 +1,3 @@
-#include <windows.h>   /* Include Windows API for process and file operations */
 #include <stdio.h>     /* Include standard I/O functions */
 #include <stdlib.h>    /* Include standard library functions */
 #include <string.h>    /* Include string handling functions */
@@ -81,14 +80,20 @@ void print_help(void)
 typedef void (*command_handler)(void);
 
 /**
- * struct command_entry - Structure to hold a command and its handler.
- * @command: The command string.
- * @handler: The function pointer to the command handler.
+ * struct command_entry - Struct to map commands to handler functions.
+ * @command: The command string input by the user.
+ * @handler: A pointer to the function that handles the command.
+ *
+ * Description: This structure holds a command string and its associated
+ * handler function. It is used to define a list of supported commands
+ * and their corresponding functions that execute the commands.
  */
-typedef struct {
+typedef struct command_entry
+{
     const char *command;
     command_handler handler;
 } command_entry;
+
 
 /* Array of command entries */
 command_entry commands[] = {
@@ -131,10 +136,14 @@ int process_command(const char *cmd)
  */
 int file_exists(const char *path)
 {
-    DWORD fileAttr = GetFileAttributes(path);
+    FILE *file = fopen(path, "r");
 
-    return (fileAttr != INVALID_FILE_ATTRIBUTES &&
-            !(fileAttr & FILE_ATTRIBUTE_DIRECTORY));
+    if (file != NULL)
+    {
+        fclose(file);
+        return (-1);
+    }
+    return (0);
 }
 
 /**
@@ -143,42 +152,11 @@ int file_exists(const char *path)
  */
 void execute_command(const char *cmd)
 {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    char command[BUFFER_SIZE];
-
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(pi));
-
-    snprintf(command, BUFFER_SIZE, "%s", cmd);
-
-    if (!file_exists(command))
+    int ret = system(cmd);
+    if (ret == -1)
     {
-        fprintf(stderr, "Command not found or is not executable: %s\n", cmd);
-        return;
+        perror("system");
     }
-
-    if (!CreateProcess(
-            NULL,        /* No module name (use command line) */
-            command,     /* Command line */
-            NULL,        /* Process handle not inheritable */
-            NULL,        /* Thread handle not inheritable */
-            FALSE,       /* Set handle inheritance to FALSE */
-            0,           /* No creation flags */
-            NULL,        /* Use parent's environment block */
-            NULL,        /* Use parent's starting directory */
-            &si,         /* Pointer to STARTUPINFO structure */
-            &pi))        /* Pointer to PROCESS_INFORMATION structure */
-    {
-        fprintf(stderr, "CreateProcess failed (%d).\n", GetLastError());
-        return;
-    }
-
-    WaitForSingleObject(pi.hProcess, INFINITE); /* Wait for the process to finish */
-
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
 }
 
 /**
