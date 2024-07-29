@@ -2,6 +2,10 @@
 #include <stdlib.h>    /* Include standard library functions */
 #include <string.h>    /* Include string handling functions */
 #include <time.h>      /* Include time functions */
+#include <unistd.h>    /* Include POSIX functions */
+
+/* Declaration of environ */
+extern char **environ;
 
 #define BUFFER_SIZE 1024   /* Define a buffer size constant for command input */
 
@@ -20,7 +24,6 @@ int file_exists(const char *path);
  */
 void print_env(void)
 {
-    extern char **environ;
     char **env = environ;
 
     while (*env)
@@ -81,20 +84,22 @@ void print_help(void)
 typedef void (*command_handler)(void);
 
 /**
- * struct command_entry - Struct to map commands to handler functions.
- * @command: The command string input by the user.
- * @handler: A pointer to the function that handles the command.
+ * struct command_entry - Structure to hold a command and its handler.
+ * @command: The command string that the user will input.
+ * @handler: A function pointer to the function that handles the command.
  *
- * Description: This structure holds a command string and its associated
- * handler function. It is used to define a list of supported commands
- * and their corresponding functions that execute the commands.
+ * Description: This structure maps a command string to its corresponding 
+ * handler function. It is used to define a list of supported commands 
+ * and their respective functions that execute the command's logic. The 
+ * `command` member holds the string that represents the command 
+ * (e.g., "exit", "env", "hello"), and the `handler` member is a pointer 
+ * to the function that will be called when the command is executed.
  */
 typedef struct command_entry
 {
     const char *command;
     command_handler handler;
 } command_entry;
-
 
 /* Array of command entries */
 command_entry commands[] = {
@@ -137,14 +142,7 @@ int process_command(const char *cmd)
  */
 int file_exists(const char *path)
 {
-    FILE *file = fopen(path, "r");
-
-    if (file != NULL)
-    {
-        fclose(file);
-        return (-1);
-    }
-    return (0);
+    return (access(path, F_OK) == 0);
 }
 
 /**
@@ -153,10 +151,24 @@ int file_exists(const char *path)
  */
 void execute_command(const char *cmd)
 {
-    int ret = system(cmd);
-    if (ret == -1)
+    pid_t pid;
+    int status;
+
+    pid = fork();
+    if (pid == -1)
     {
-        perror("system");
+        perror("fork");
+        return;
+    }
+    else if (pid == 0)
+    {
+        execlp(cmd, cmd, (char *)NULL);
+        perror("execlp");
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        waitpid(pid, &status, 0);
     }
 }
 
