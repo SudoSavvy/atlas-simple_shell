@@ -185,15 +185,12 @@ int main(void)
         fflush(stdout); /* Flush output buffer */
 
         nread = getline(&line, &len, stdin); /* Read input line */
+        
         if (nread == -1)
         {
-            /* Check if getline failed due to end-of-file or error */
-            if (nread == -1 && !feof(stdin))
-            {
-                perror("getline"); /* Print error message */
-                continue;
-            }
-            break; /* Exit on EOF */
+             /* If getline returns -1, it indicates an error or EOF */
+            perror("getline"); /* Print error message if getline failed */
+            break; /* Exit the loop if there is an error or EOF */
         }
 
         newline = strchr(line, '\n'); /* Find newline character */
