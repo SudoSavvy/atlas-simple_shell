@@ -20,6 +20,7 @@ int file_exists(const char *path);
  */
 void print_env(void)
 {
+    extern char **environ;
     char **env = environ;
 
     while (*env)
