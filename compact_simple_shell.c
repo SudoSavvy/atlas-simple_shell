@@ -161,8 +161,11 @@ void execute_command(const char *cmd)
     }
     else if (pid == 0) /* Child process */
     {
-        execlp(cmd, cmd, (char *)NULL);  /* Replace the child process with the command */
-        perror("execlp"); /* If execlp fails */
+        /* Execute the command */
+        execlp(cmd, cmd, (char *)NULL);
+        
+        /* If execlp fails, print an error message */
+        perror("execlp");
         exit(EXIT_FAILURE); /* Exit the child process with failure status */
     }
 }
