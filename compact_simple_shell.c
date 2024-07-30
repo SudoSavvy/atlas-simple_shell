@@ -149,6 +149,10 @@ int file_exists(const char *path)
  * execute_command - Execute external commands.
  * @cmd: The command string input by the user.
  */
+/**
+ * execute_command - Execute external commands.
+ * @cmd: The command string input by the user.
+ */
 void execute_command(const char *cmd)
 {
     char *args[100]; /* Array to hold command and arguments */
@@ -173,12 +177,13 @@ void execute_command(const char *cmd)
         return;
     }
 
-    /* Cast args to const char * const * */
-    execvp(args[0], (const char *const *)args);
+    /* Directly use args as it matches the required type */
+    execvp(args[0], args);
 
     /* If execvp returns, an error occurred */
     perror("execvp");
 }
+
 
 /**
  * main - Main loop of the shell.
