@@ -57,7 +57,7 @@ void print_date(void)
 {
     time_t now = time(NULL);
 
-    if (now != -1)
+    if (now != (time_t)-1)
     {
         printf("Current date and time: %s", ctime(&now)); /* Print current date and time */
     }
@@ -173,7 +173,8 @@ void execute_command(const char *cmd)
         return;
     }
 
-    execvp(args[0], args); /* Execute the command with arguments */
+    /* Cast args to const char * const * */
+    execvp(args[0], (const char *const *)args);
 
     /* If execvp returns, an error occurred */
     perror("execvp");
@@ -193,42 +194,40 @@ int main(void)
 
     while (1)
     {
-        printf("simple_shell> "); /* Print shell prompt */
-        fflush(stdout); /* Flush output buffer */
+        printf("simple_shell> ");
+        fflush(stdout);
 
-        nread = getline(&line, &len, stdin); /* Read input line */
-        
+        nread = getline(&line, &len, stdin);
+
         if (nread == -1)
         {
-            if (feof(stdin)) /* End of file */
+            /* Handle end-of-file without feof */
+            if (nread == -1)
             {
-                printf("\n");
-                break; /* Exit on EOF */
-            }
-            else
-            {
-                perror("getline"); /* Print error message */
+                perror("getline");
                 continue;
             }
+            printf("\n");
+            break;
         }
 
-        newline = strchr(line, '\n'); /* Find newline character */
+        newline = strchr(line, '\n');
         if (newline)
         {
-            *newline = '\0'; /* Replace newline character with null terminator */
+            *newline = '\0';
         }
 
         if (strlen(line) == 0)
         {
-            continue; /* Skip empty input */
+            continue;
         }
 
-        if (!process_command(line)) /* Process built-in commands */
+        if (!process_command(line))
         {
-            execute_command(line); /* Execute external command */
+            execute_command(line);
         }
     }
 
-    free(line); /* Free the allocated buffer */
+    free(line);
     return (0);
 }
