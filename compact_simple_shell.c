@@ -167,20 +167,18 @@ void execute_command(const char *cmd)
     }
     args[i] = NULL; /* Null-terminate the argument list */
 
-    /* Check if the command file exists */
     if (!file_exists(args[0]))
     {
         fprintf(stderr, "Command not found or is not executable: %s\n", args[0]);
         return;
     }
 
-    /* Execute the command */
-    execvp(args[0], args);
+    /* Cast args to const char * const * */
+    execvp(args[0], (const char *const *)args);
 
     /* If execvp returns, an error occurred */
     perror("execvp");
 }
-
 
 /**
  * main - Main loop of the shell.
