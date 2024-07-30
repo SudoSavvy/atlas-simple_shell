@@ -3,6 +3,7 @@
 #include <string.h>    /* Include string handling functions */
 #include <time.h>      /* Include time functions */
 #include <unistd.h>    /* Include POSIX functions */
+#include <stddef.h>    /* Include standard definitions */
 
 /* Declaration of environ */
 extern char **environ;
@@ -173,7 +174,7 @@ void execute_command(const char *cmd)
         return;
     }
 
-    /* Execute the command */
+    /* Cast args to char *const * */
     execvp(args[0], args);
 
     /* If execvp returns, an error occurred */
@@ -201,7 +202,13 @@ int main(void)
 
         if (nread == -1)
         {
-            perror("getline");
+            /* Handle end-of-file without feof */
+            if (nread == -1)
+            {
+                perror("getline");
+                continue;
+            }
+            printf("\n");
             break;
         }
 
