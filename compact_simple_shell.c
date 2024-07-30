@@ -173,8 +173,8 @@ void execute_command(const char *cmd)
         return;
     }
 
-    /* Cast args to const char * const * */
-    execvp(args[0], (const char *const *)args);
+    /* Execute the command */
+    execvp(args[0], args);
 
     /* If execvp returns, an error occurred */
     perror("execvp");
@@ -201,13 +201,7 @@ int main(void)
 
         if (nread == -1)
         {
-            /* Handle end-of-file without feof */
-            if (nread == -1)
-            {
-                perror("getline");
-                continue;
-            }
-            printf("\n");
+            perror("getline");
             break;
         }
 
