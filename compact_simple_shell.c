@@ -149,10 +149,6 @@ int file_exists(const char *path)
  * execute_command - Execute external commands.
  * @cmd: The command string input by the user.
  */
-/**
- * execute_command - Execute external commands.
- * @cmd: The command string input by the user.
- */
 void execute_command(const char *cmd)
 {
     char *args[100]; /* Array to hold command and arguments */
@@ -177,13 +173,12 @@ void execute_command(const char *cmd)
         return;
     }
 
-    /* Directly use args as it matches the required type */
-    execvp(args[0], args);
+    /* Cast args to const char * const * */
+    execvp(args[0], (const char *const *)args);
 
     /* If execvp returns, an error occurred */
     perror("execvp");
 }
-
 
 /**
  * main - Main loop of the shell.
@@ -207,7 +202,7 @@ int main(void)
         if (nread == -1)
         {
             /* Handle end-of-file without feof */
-            if (nread == -1)
+            if (nread == -1 && !feof(stdin))
             {
                 perror("getline");
                 continue;
